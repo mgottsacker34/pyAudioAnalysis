@@ -7,6 +7,7 @@ from pyAudioAnalysis import audioFeatureExtraction as aF
 from pyAudioAnalysis import audioTrainTest as aT
 from pyAudioAnalysis import audioBasicIO
 from scipy.spatial import distance
+from collections import defaultdict #for csv creation
 import matplotlib.pyplot as plt
 import sklearn.discriminant_analysis
 import csv
@@ -16,6 +17,7 @@ import sklearn.cluster
 import hmmlearn.hmm
 import pickle as cPickle
 import glob
+
 
 """ General utility functions """
 
@@ -843,10 +845,6 @@ def speakerDiarization(filename, n_speakers, mt_size=2.0, mt_step=0.2,
         #mt_feats_to_red += numpy.random.rand(mt_feats_to_red.shape[0], mt_feats_to_red.shape[1]) * 0.0000010
         (mt_feats_to_red, MEAN, STD) = aT.normalizeFeatures([mt_feats_to_red.T])
         mt_feats_to_red = mt_feats_to_red[0].T
-        #dist_all = numpy.sum(distance.squareform(distance.pdist(mt_feats_to_red.T)), axis=0)
-        #m_dist_all = numpy.mean(dist_all)
-        #iNonOutLiers2 = numpy.nonzero(dist_all < 3.0*m_dist_all)[0]
-        #mt_feats_to_red = mt_feats_to_red[:, iNonOutLiers2]
         Labels = numpy.zeros((mt_feats_to_red.shape[1], ));
         LDAstep = 1.0
         LDAstepRatio = LDAstep / st_win
@@ -944,7 +942,7 @@ def speakerDiarization(filename, n_speakers, mt_size=2.0, mt_step=0.2,
 
     sil = sil_all[imax]
     class_names = ["speaker{0:d}".format(c) for c in range(nSpeakersFinal)];
-    
+   
     # Output analysis to terminal before plotting.
     print('\n--- Analysis results ---\n')
     print('class names:', class_names)
@@ -961,7 +959,11 @@ def speakerDiarization(filename, n_speakers, mt_size=2.0, mt_step=0.2,
         cls_percentages[class_names[i]] = 0
 
     print(cls_speaker_dict)
+    
+    
     # Iterate through cls and increment dictionary count when each speaker tag is encountered.
+    
+    
     for i in range(len(cls)):
         cls_speaker_dict[class_names[int(cls[i])]] += 1
 
@@ -975,6 +977,7 @@ def speakerDiarization(filename, n_speakers, mt_size=2.0, mt_step=0.2,
 
     # load ground-truth if available
     gt_file = filename.replace('.wav', '.segments')
+    op_file = filename.replace('.wav','.csv')
     # if groundturh exists
     if os.path.isfile(gt_file):
         [seg_start, seg_end, seg_labs] = readSegmentGT(gt_file)
@@ -994,9 +997,6 @@ def speakerDiarization(filename, n_speakers, mt_size=2.0, mt_step=0.2,
     if os.path.isfile(gt_file):
         # Output GT to terminal before plotting.
         print('\n--- Ground truth ---\n')
-        #print('flags_gt:', flags_gt)
-        #print(numpy.array(range(len(flags_gt))) * mt_step + mt_step / 2.0)
-        #print(type(flags_gt[0]))
 
         gt_speaker_dict = {}
         gt_percentages = {}
@@ -1008,6 +1008,7 @@ def speakerDiarization(filename, n_speakers, mt_size=2.0, mt_step=0.2,
             gt_speaker_dict[class_names[int(flags_gt[i])]] += 1
 
         print(gt_speaker_dict)
+        #print(gt_speaker_dict[1])
         print('Ground truth speaking time breakdown:')
         for i in range(nSpeakersFinal):
             gt_percentages[class_names[i]] = gt_speaker_dict[class_names[i]] / float(len(flags_gt))
@@ -1015,10 +1016,11 @@ def speakerDiarization(filename, n_speakers, mt_size=2.0, mt_step=0.2,
 
         print('\n--- Evaluation of analysis ---')
         num_correct = 0
+
         for i in range(len(cls) - 1):
             if cls[i] == flags_gt[i]:
                 num_correct += 1
-        
+
         print('Number of correctly classified segments:',num_correct)
         print('Total segments:', len(cls))
         correct_ratio = num_correct / float(len(cls))
@@ -1027,18 +1029,45 @@ def speakerDiarization(filename, n_speakers, mt_size=2.0, mt_step=0.2,
         for i in range(nSpeakersFinal):
             print(' ', class_names[i],':', cls_percentages[class_names[i]] - gt_percentages[class_names[i]])
 
-
         if plot_res:
             ax1.plot(numpy.array(range(len(flags_gt))) *
                      mt_step + mt_step / 2.0, flags_gt, 'r')
         purity_cluster_m, purity_speaker_m = \
             evaluateSpeakerDiarization(cls, flags_gt)
-        print("{0:.1f}\t{1:.1f}".format(100 * purity_cluster_m,
+        print("purity cluster: {0:.1f}\tpurity speaker: {1:.1f}".format(100 * purity_cluster_m,
                                         100 * purity_speaker_m))
         if plot_res:
             plt.title("Cluster purity: {0:.1f}% - "
                       "Speaker purity: {1:.1f}%".format(100 * purity_cluster_m,
-                                                        100 * purity_speaker_m))
+                          100 * purity_speaker_m))
+            #dicts = cls_percentages, gt_percentages 
+            #dd = defaultdict(list)
+            #for d in (cls_percentages, gt_percentages):
+            #    for key,value in d.items():
+            #        dd[key].append(value)
+            
+            #print(dd)
+            
+            for i in range(nSpeakersFinal):
+                csv_columns = ['speakerID','AT','GT']
+                with open('%s' % op_file, 'w') as f:
+                    writer = csv.writer(f,delimiter = ',')
+                    writer.writerow(csv_columns)
+                    for (k,v), (k2,v2) in zip(cls_percentages.items(),gt_percentages.items()): 
+                        writer.writerow([k,str(v),str(v2)])
+            
+            #        for key,value in gt_percentages.items():
+            #            writer.writerow([key,value])
+            #dicts = cls_percentages, gt_percentages
+            #with open('%s'%op_file, 'w') as output:
+            #    writer = csv.writer(output,delimiter = '\t')
+            #    csv_columns = ['speakerID','AT','GT']
+            #    writer.writerow(csv_columns)
+            #    for key in class_names.iterkeys():
+            #        writer.writerow([key] + [d[key] for d in dicts])
+            
+           
+
     if plot_res:
         plt.xlabel("time (seconds)")
         #print s_range, sil_all    
@@ -1048,8 +1077,24 @@ def speakerDiarization(filename, n_speakers, mt_size=2.0, mt_step=0.2,
             plt.xlabel("number of clusters");
             plt.ylabel("average clustering's sillouette");
         plt.show()
+   
     return cls
-    
+
+
+def speakerDiarizationToCSV(gt_file):
+
+    ''' 
+    open('%s_analysis.csv' % gt_file, 'w') as f:
+            fieldnames = ['Speaker','GT','Analysis']
+            writer = csv.DictWriter(f,fieldnames)
+            writer.writeheader()
+            for i in range(len(nSpeakersFinal)):
+                writer.writerow(class_names[i])
+
+          #  for key, value in gt_speaker_dict.items():
+           #     writer.writerow([key,value]
+'''
+
 def speakerDiarizationEvaluateScript(folder_name, ldas):
     '''
         This function prints the cluster purity and speaker purity for
