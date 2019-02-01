@@ -1016,8 +1016,8 @@ def speakerDiarization(filename, n_speakers, mt_size=2.0, mt_step=0.2,
 
         print('\n--- Evaluation of analysis ---')
         num_correct = 0
-        #print(flags_gt)
-        for i in range(len(cls)):
+
+        for i in range(len(cls) - 1):
             if cls[i] == flags_gt[i]:
                 num_correct += 1
 
