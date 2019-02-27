@@ -2,27 +2,40 @@ import sys
 import os
 import re
 import glob
+import argparse
 from pydub import AudioSegment
 import scipy.io.wavfile as wavfile
 
 from pyAudioAnalysis import audioBasicIO as aIO
 from pyAudioAnalysis import audioSegmentation as aS
 
-if '.wav' not in sys.argv[1]:
-    print('ERROR: Please enter a .wav file as the first argument. Exiting.')
-    sys.exit()
-if not os.path.isfile(sys.argv[1]):
-    print('ERROR: Enter a valid .wav file as the first argument. Exiting.')
-    sys.exit()
+parser = argparse.ArgumentParser(description='Generate audio file without silence.')
+parser.add_argument('--inputfile', '-i', type=str, required=True, help='.wav file to analyze')
+parser.add_argument('--smoothingWindow', '-sw', type=float, required=True, help='window (in seconds) used to smooth the SVM probabilistic sequence of silence removal')
+parser.add_argument('--weight', '-w', type=float, required=True, help='a factor between  and 1 defining the weight, or strictness, for thresholding in silence removal')
+args = parser.parse_args()
 
-# Read filename from commandline args.
-filename = sys.argv[1]
+# if '.wav' not in sys.argv[1]:
+#     print('ERROR: Please enter a .wav file as the first argument. Exiting.')
+#     sys.exit()
+# if not os.path.isfile(sys.argv[1]):
+#     print('ERROR: Please enter a valid .wav file as the first argument. Exiting.')
+#     sys.exit()
+#
+# # Read commandline args.
+# filename = sys.argv[1]
+# smoothing = float(sys.argv[2])
+# weightThresh = float(sys.argv[3])
+filename = args.inputfile
+smoothing = args.smoothingWindow
+weightThresh = args.weight
+
 
 print('Removing silence from ' + filename + '...')
 
 # Use pAA to remove silence and get the segments with audio.
 [Fs, x] = aIO.readAudioFile(filename)
-segments = aS.silenceRemoval(x, Fs, 0.020, 0.020, smoothWindow = 0.1, weight = 0.6, plot = False)
+segments = aS.silenceRemoval(x, Fs, 0.020, 0.020, smoothWindow = smoothing, weight = weightThresh, plot = False)
 
 # TODO: Possibility to do more processing on the speech segments. For example, if the
 # gap is very short, and the speaker switches from a man to a woman, it could
