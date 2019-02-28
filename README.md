@@ -27,11 +27,11 @@ pyAudioAnalysis is a Python library covering a wide range of audio analysis task
  ```
 pip install numpy matplotlib scipy sklearn hmmlearn simplejson eyed3 pydub
 ```
- * Clone the source of this library: 
+ * Clone the source of this library:
  ```
 git clone https://github.com/tyiannak/pyAudioAnalysis.git
 ```
- * Install using pip: 
+ * Install using pip:
  ```
 pip install -e .
 ```
@@ -52,6 +52,16 @@ Result:
 
 In addition, command-line support is provided for all functionalities. E.g. the following command extracts the spectrogram of an audio signal stored in a WAV file: `python audioAnalysis.py fileSpectrogram -i data/doremi.wav`
 
+## Using the web app
+
+Install Flask with `pip install Flask`.
+
+Navigate to the `www` folder.
+
+Type `export FLASK_APP=index.py` the first time you run it.
+
+Type `python -m flask run`.
+
 ## Further reading
 Apart from the current README file and [the wiki](https://github.com/tyiannak/pyAudioAnalysis/wiki), a more general and theoretic description of the adopted methods (along with several experiments on particular use-cases) is presented [in this publication](http://journals.plos.org/plosone/article?id=10.1371/journal.pone.0144610). Please use the following citation when citing pyAudioAnalysis in your research work:
 ```
@@ -71,7 +81,5 @@ Finally, for Matlab-related audio analysis material check  [this book](http://ww
 ## Author
 <img src="https://tyiannak.github.io/files/3.JPG" align="left" height="100"/>
 
-[Theodoros Giannakopoulos](https://tyiannak.github.io), 
+[Theodoros Giannakopoulos](https://tyiannak.github.io),
 Director of Machine Learning at [Behavioral Signals](https://behavioralsignals.com)
-
-
