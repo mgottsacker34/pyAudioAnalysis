@@ -25,7 +25,7 @@ pyAudioAnalysis is a Python library covering a wide range of audio analysis task
 ## Installation
  * Install dependencies:
  ```
-pip install numpy matplotlib scipy sklearn hmmlearn simplejson eyed3 pydub
+pip install numpy matplotlib scipy sklearn hmmlearn simplejson eyed3 pydub Flask
 ```
  * Clone the source of this library:
  ```
@@ -53,8 +53,6 @@ Result:
 In addition, command-line support is provided for all functionalities. E.g. the following command extracts the spectrogram of an audio signal stored in a WAV file: `python audioAnalysis.py fileSpectrogram -i data/doremi.wav`
 
 ## Using the web app
-
-Install Flask with `pip install Flask`.
 
 Navigate to the `www` folder.
 
