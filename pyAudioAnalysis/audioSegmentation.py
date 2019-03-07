@@ -244,7 +244,7 @@ def plotSegmentationResults(flags_ind, flags_ind_gt, class_names, mt_step, ONLY_
         print('percentages')
         print(str(percentages))
         perclist = percentages.tolist()
-        perclist2 = [perclist[0][0], perclist[1][0], perclist[2][0]]
+        perclist2 = [perclist[0][0], perclist[1][0]]
         print(str(perclist2))
         # print(perclist2)
         ax2.bar(numpy.array(range(len(class_names))) + 0.5, perclist2)
