@@ -3,14 +3,17 @@ This Python script is what we will use to formulate visualizations on after a me
 
 """
 import matplotlib.pyplot as mp
-#mp.figure(0)
+
 labels = 'Male', 'Female'
 sizes = [60, 40]
 #explode = (0, 0)     #this command emphasizes a slice
+
 fig0, ax0 = mp.subplots()
 ax0.pie(sizes,labels=labels, autopct='%1.1f%%',
         shadow=False, startangle=180)
+
 ax0.axis('equal')   #Equal aspect ratio ensures that pie is drawn as circle
+
 mp.title('Segmented Evaluation')
 
 """

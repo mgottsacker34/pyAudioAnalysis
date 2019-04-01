@@ -3,9 +3,9 @@ import numpy
 import sklearn.cluster
 import scipy
 import os
-from pyAudioAnalysis import audioFeatureExtraction as aF
-from pyAudioAnalysis import audioTrainTest as aT
-from pyAudioAnalysis import audioBasicIO
+import audioFeatureExtraction as aF
+import audioTrainTest as aT
+import audioBasicIO
 from scipy.spatial import distance
 from collections import defaultdict #for csv creation
 import matplotlib.pyplot as plt

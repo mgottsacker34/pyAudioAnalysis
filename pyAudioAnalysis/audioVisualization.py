@@ -3,8 +3,8 @@ import shutil, struct, simplejson
 from scipy.spatial import distance
 from pylab import *
 import ntpath
-from pyAudioAnalysis import audioFeatureExtraction as aF
-from pyAudioAnalysis import audioTrainTest as aT
+import audioFeatureExtraction as aF
+import audioTrainTest as aT
 import sklearn
 import sklearn.discriminant_analysis
 import os

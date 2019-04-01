@@ -7,8 +7,8 @@ import pickle as cPickle
 import signal
 import csv
 import ntpath
-from pyAudioAnalysis import audioFeatureExtraction as aF
-from pyAudioAnalysis import audioBasicIO
+import audioFeatureExtraction as aF
+import audioBasicIO
 from scipy import linalg as la
 from scipy.spatial import distance
 import sklearn.svm
@@ -333,7 +333,7 @@ def featureAndTrain(list_of_dirs, mt_win, mt_step, st_win, st_step,
     elif classifier_type == "extratrees":
         classifier_par = numpy.array([10, 25, 50, 100,200,500])
 
-    # get optimal classifeir parameter:
+    # get optimal classifier parameter:
     features2 = []
     for f in features:
         fTemp = []
