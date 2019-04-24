@@ -9,14 +9,27 @@ UPLOAD_FOLDER = './uploads'
 ALLOWED_EXTENSIONS = set(['wav'])
 
 uploaded_files = []
-for (dirpath, dirnames, filenames) in os.walk(UPLOAD_FOLDER):
-    uploaded_files.extend(filenames)
-    break
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
+app.use_reloader=False
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+# called when web app is first run
+def getFilesInFolder():
+    for (dirpath, dirnames, filenames) in os.walk(UPLOAD_FOLDER):
+        uploaded_files.extend(filenames)
+        break
+        
+# called when list gets updated
+def getNewFilesInFolder():
+    for (dirpath, dirnames, filenames) in os.walk(UPLOAD_FOLDER):
+        for file in filenames:
+            if file not in uploaded_files:
+                uploaded_files.append(file)
+        break
+
+getFilesInFolder()
 
 @app.route('/uploads')
 def autoload(filename):
@@ -43,7 +56,6 @@ def upload_file():
             # flash('No file part')
             # return redirect(request.url)
             if 'silenceremoval' in request.form['analysis']:
-                print('calling silenceUtil')
                 fileToProcess = './uploads/' + request.form['fileToProcess']
                 if '.wav' not in fileToProcess:
                     flash('ERROR: Please enter a .wav file from the list above as the file to process.')
@@ -51,9 +63,14 @@ def upload_file():
                 if not os.path.isfile(fileToProcess):
                     flash('ERROR: Please enter a .wav file from the list above as the file to process.')
                     return render_template('index.html', data=uploaded_files)
-                print('Removing silence from ' + fileToProcess)
-                silenceUtil.removeSilence(fileToProcess, 0.3, 0.1)
-                return render_template('index.html', data=uploaded_files)
+                print('Calling silenceUtil...')
+                processedFile = silenceUtil.util(fileToProcess, 0.1, 0.1)
+                if (processedFile):
+                    getNewFilesInFolder()
+                    return render_template('index.html', data=uploaded_files)
+                else:
+                    flash('ERROR: Silence removal errored.')
+                    return render_template('index.html', data=uploaded_files)
             elif 'speakerdiarization' in request.form:
                 print('Speaker diarization')
                 return render_template('index.html', data=uploaded_files)

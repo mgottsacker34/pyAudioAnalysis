@@ -34,7 +34,7 @@ def removeSilence(filename, smoothing, weightThresh):
     print('Attempting to remove silence from ' + filename + '...')
     
 
-def util():
+def util(filename, smoothing, weightThresh):
     print('Removing silence from ' + filename + '...')
 
     # Use pAA to remove silence and get the segments with audio.
@@ -46,7 +46,7 @@ def util():
     # be evidence of an interruption.
 
     # Produce .wav files with speech activity.
-    print('Creating .wav files from silent segments...')
+    print('Creating .wav files from non-silent segments...')
     for i, s in enumerate(segments):
         strOut = "{0:s}_{1:.3f}-{2:.3f}.wav".format(filename[0:-4], s[0], s[1])
         wavfile.write(strOut, Fs, x[int(Fs * s[0]):int(Fs * s[1])])
@@ -96,5 +96,7 @@ def util():
         os.remove(infile)
 
     outfile = basename + '-nosilence.wav'
+    
     print('Writing output file: ' + outfile + '.')
     combined_sounds.export(outfile, format="wav")
+    return outfile
