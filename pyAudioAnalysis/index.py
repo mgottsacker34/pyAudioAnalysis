@@ -3,35 +3,45 @@ from flask import Flask, flash, request, redirect, url_for, render_template, sen
 import json
 import wave
 import contextlib
+
 from werkzeug.utils import secure_filename
-from pyAudioAnalysis import silenceUtil
+from pyAudioAnalysis import webUtil
 
 TEMPLATES_AUTO_RELOAD = True
 
 UPLOAD_FOLDER = './uploads'
 ALLOWED_EXTENSIONS = set(['wav'])
 
-uploaded_files = []
+# webdata.uploaded_files = []
 
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 app.use_reloader=False
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# called when web app is first run
+# Data structure to store all webapp info. This will be passed to front end.
+webdata = {
+    "uploaded_files": [],
+    "ratio_male": 0.0,
+    "ratio_female": 0.0,
+    "img_src": ""
+}
+
+# Store list of uploaded files. Called when web app is first run
 def getFilesInFolder():
     for (dirpath, dirnames, filenames) in os.walk(UPLOAD_FOLDER):
-        uploaded_files.extend(filenames)
+        webdata["uploaded_files"].extend(filenames)
         break
         
-# called when list gets updated
+# Update list of uploaded files. Called when other functions change files.
 def getNewFilesInFolder():
     for (dirpath, dirnames, filenames) in os.walk(UPLOAD_FOLDER):
         for file in filenames:
-            if file not in uploaded_files:
-                uploaded_files.append(file)
+            if file not in webdata["uploaded_files"]:
+                webdata["uploaded_files"].append(file)
         break
-        
+
+# Get length (in seconds) of audio file   
 def computeLengthOfFile(wavFile):
     with contextlib.closing(wave.open(wavFile,'r')) as f:
         frames = f.getnframes()
@@ -39,7 +49,8 @@ def computeLengthOfFile(wavFile):
         duration = frames / float(rate)
         print(duration)
         return duration
-        
+
+# loop through records in JSON file and find the one to update
 def findRecordAndUpdate(filename, fieldToUpdate, newValue=""):
 
     print('file to find and update: ', filename)
@@ -51,12 +62,13 @@ def findRecordAndUpdate(filename, fieldToUpdate, newValue=""):
         
     for record in data["individual_report_data"]:
         if record["basename"] == filename:
+            # If desired action is get new length, compute it.
             if fieldToUpdate == "lengthWithoutSilence":
                 fullFilePath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
                 record[fieldToUpdate] = computeLengthOfFile(fullFilePath)
             else:
                 record[fieldToUpdate] = newValue
-
+    # write resultant data to file
     with open("reports.json", "w") as jsonFile:
         json.dump(data, jsonFile, indent=4)
 
@@ -75,7 +87,7 @@ def uploaded_file(filename):
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS and \
-           filename not in uploaded_files
+           filename not in webdata["uploaded_files"]
 
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
@@ -90,25 +102,30 @@ def upload_file():
                 fileToProcess = './uploads/' + request.form['fileToProcess']
                 if '.wav' not in fileToProcess:
                     flash('ERROR: Please enter a .wav file from the list above as the file to process.')
-                    return render_template('index.html', data=uploaded_files)
+                    return render_template('index.html', data=webdata)
                 if not os.path.isfile(fileToProcess):
                     flash('ERROR: Please enter a .wav file from the list above as the file to process.')
-                    return render_template('index.html', data=uploaded_files)
+                    return render_template('index.html', data=webdata)
                 print('Calling silenceUtil...')
-                processedFile = silenceUtil.removeSilence(fileToProcess, 0.1, 0.1)
+                processedFile = webUtil.removeSilence(fileToProcess, 0.1, 0.1)
                 findRecordAndUpdate(request.form['fileToProcess'], "lengthWithoutSilence")
                 if (processedFile):
                     getNewFilesInFolder()
-                    return render_template('index.html', data=uploaded_files)
+                    return render_template('index.html', data=webdata)
                 else:
                     flash('ERROR: Silence removal failed.')
-                    return render_template('index.html', data=uploaded_files)
-            elif 'speakerdiarization' in request.form:
+                    return render_template('index.html', data=webdata)
+            elif 'speakerdiarization' in request.form['analysis']:
                 print('Speaker diarization')
-                return render_template('index.html', data=uploaded_files)
-            elif 'mfclassification' in request.form:
+                return render_template('index.html', data=webdata)
+            elif 'mfclassification' in request.form['analysis']:
                 print('Male/Female Classification')
-                return render_template('index.html', data=uploaded_files)
+                fileToProcess = './uploads/' + request.form['fileToProcess']
+                # CALL to webUtil
+                [male, female] = webUtil.mf_classify(fileToProcess)
+                webdata.ratio_male = male
+                webdata.ratio_female = female
+                return render_template('index.html', data=webdata)
         else:
             file = request.files['file']
             # Check if no file selected
@@ -143,10 +160,10 @@ def upload_file():
                     json.dump(data, jsonFile, indent=4)
                 
                 json.dumps(data, indent=4)
-                uploaded_files.append(filename)
-                return render_template('index.html', data=uploaded_files)
+                webdata["uploaded_files"].append(filename)
+                return render_template('index.html', data=webdata)
                 # return redirect(url_for('uploaded_file',
                 #                         filename=filename))
 
 
-    return render_template('index.html', data=uploaded_files)
+    return render_template('index.html', data=webdata)
