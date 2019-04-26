@@ -3,7 +3,8 @@
         "f_total_ratio": 0,
         "f_total_time": 0,
         "m_total_time": 0,
-        "m_total_ratio": 0
+        "m_total_ratio": 0,
+        "total_time": 0
     },
     "individual_report_data": [
         {
