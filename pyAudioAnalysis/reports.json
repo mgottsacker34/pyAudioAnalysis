@@ -1,45 +1,20 @@
 {
-    "aggregate_report_data": {},
+    "aggregate_report_data": {
+        "f_total_ratio": 0,
+        "f_total_time": 0,
+        "m_total_time": 0,
+        "m_total_ratio": 0
+    },
     "individual_report_data": [
         {
-            "num_speakers": 5,
-            "basename": "part-2.wav",
-            "length": 684.5690416666666,
-            "m_speakingTime": 0,
-            "lengthWithoutSilence": 684.5690416666666,
-            "f_speakingTime": 0,
-            "f_speakingRatio": 0,
-            "m_speakingRatio": 0
-        },
-        {
-            "num_speakers": 5,
+            "m_speakingRatio": 0,
             "basename": "sounds.wav",
-            "length": 5,
-            "m_speakingTime": 0,
-            "lengthWithoutSilence": 2.85,
-            "f_speakingTime": 0,
-            "f_speakingRatio": 0,
-            "m_speakingRatio": 0
-        },
-        {
+            "length": 2.85,
             "num_speakers": 5,
-            "basename": "part-1-amp.wav",
-            "length": 624.4138333333333,
+            "lengthWithoutSilence": 2.1699166666666665,
             "m_speakingTime": 0,
-            "lengthWithoutSilence": 0,
-            "f_speakingTime": 0,
             "f_speakingRatio": 0,
-            "m_speakingRatio": 0
-        },
-        {
-            "num_speakers": 5,
-            "basename": "part-2.wav",
-            "length": 684.5690416666666,
-            "m_speakingTime": 0,
-            "lengthWithoutSilence": 684.5690416666666,
-            "f_speakingTime": 0,
-            "f_speakingRatio": 0,
-            "m_speakingRatio": 0
+            "f_speakingTime": 0
         }
     ]
 }

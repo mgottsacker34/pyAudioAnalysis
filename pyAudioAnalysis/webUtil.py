@@ -11,6 +11,10 @@ from pyAudioAnalysis import audioSegmentation as aS
 
 def mf_classify(filename):
     print('processing: ', filename)
+    
+    m_flags, f_flags, m_ratio, f_ratio, m_time, f_time = 0
+    
+    # TODO: Update model or method of classifying male/female speakers
 
     [flagsInd, classesAll, acc, CM] = aS.mtFileClassification(filename, "data/knnSpeakerFemaleMale", "knn", plot_results=False)
     print('flagsInd:   ', flagsInd)
@@ -18,11 +22,16 @@ def mf_classify(filename):
     print('acc:        ', acc)
     print('CM:         ', CM)
     
-    # Sum up the number of times 0 (male) appears in flagsInd
-    # Sum up the number of times 1 (female) appears in flagsInd
-    # Get their ratios
+    # TODO: One way to compute things
     
-    # return [ratio_male, ratio_female]
+    # m_flags: Sum up the number of times 0 (male) appears in flagsInd 
+    # f_flags: Sum up the number of times 1 (female) appears in flagsInd
+    # m_ratio: Divide m_flags by total number of flags
+    # f_ratio: Divide f_flags by total number of flags
+    # m_time: Multiply m_flags by length of each segment (0.2 seconds ?)
+    # f_time: Multiply f_flags by length of each segment
+    
+    return [m_ratio, f_ratio, m_time, f_time]
 
 
 
@@ -33,7 +42,7 @@ def removeSilence(filename, smoothing, weightThresh):
     [Fs, x] = aIO.readAudioFile(filename)
     segments = aS.silenceRemoval(x, Fs, 0.020, 0.020, smoothWindow = smoothing, weight = weightThresh, plot = False)
 
-    # TODO: Possibility to do more processing on the speech segments. For example, if the
+    # FUTURE WORK: Possibility to do more processing on the speech segments. For example, if the
     # gap is very short, and the speaker switches from a man to a woman, it could
     # be evidence of an interruption.
 

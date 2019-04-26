@@ -70,7 +70,8 @@
                     <br>
                     <input type="radio" name="analysis" value="mfclassification">Male/Female Classification</input>
                     <hr>
-                    <input type="submit" value="Submit"></input>
+                    <input type="submit" name="processaction" value="Process File"></input>
+                    <input type="submit" name="processaction" value="Process ALL Files"></input>
                     <!-- <input type="submit" name="removesilence" value="Remove Silence" />
                     <input type="submit" name="speakerdiarization" value="Speaker Diarization" />
                     <input type="submit" name="mfclassification" value="Male/Female Classification" /> -->
@@ -91,6 +92,11 @@
       <div class="col-lg-6">
         <h3>Results</h3>
 
+        <!-- TODO: Display visualization -->
+        <!-- render_template() from index.py will refresh page with the updated webdata object -->
+        <!-- This is the wrong way to get the data, but it could be something like the following: -->
+        <!-- <img src= data.img_src  />
+        
 
 
       </div>

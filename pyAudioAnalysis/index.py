@@ -3,6 +3,7 @@ from flask import Flask, flash, request, redirect, url_for, render_template, sen
 import json
 import wave
 import contextlib
+import re
 
 from werkzeug.utils import secure_filename
 from pyAudioAnalysis import webUtil
@@ -47,27 +48,40 @@ def computeLengthOfFile(wavFile):
         frames = f.getnframes()
         rate = f.getframerate()
         duration = frames / float(rate)
-        print(duration)
+        print('audio file length computed for', wavFile, ': ', duration)
         return duration
 
 # loop through records in JSON file and find the one to update
-def findRecordAndUpdate(filename, fieldToUpdate, newValue=""):
+def findRecordAndUpdate(filename, updateMode, mf_data=[0,0,0,0]):
 
+    # For debugging...
     print('file to find and update: ', filename)
-    print('field: ', fieldToUpdate)
-    print('new value: ', newValue)
+    print('update mode:             ', updateMode)
+    print('mf_data:                 ', mf_data)
 
     with open("reports.json", "r") as jsonFile:
         data = json.load(jsonFile)
         
+    # Iterate through records in JSON file and find the right one to update.
     for record in data["individual_report_data"]:
         if record["basename"] == filename:
-            # If desired action is get new length, compute it.
-            if fieldToUpdate == "lengthWithoutSilence":
+            # If desired action is get new length after silence removed, compute length.
+            if updateMode == "silenceRemoved":
+                # Get filename with -nosilence appended.
+                filename = re.findall('.*[^.wav]', filename)[0] + '-nosilence.wav'
+                # Get full file path.
                 fullFilePath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-                record[fieldToUpdate] = computeLengthOfFile(fullFilePath)
-            else:
-                record[fieldToUpdate] = newValue
+                record["lengthWithoutSilence"] = computeLengthOfFile(fullFilePath)
+                
+            # TODO: Update m/f data in report record.
+            # Right now, it takes an array as a parameter, so the mf_data values MUST BE IN THIS ORDER.
+            # We could also use a dict, so that order wouldn't matter. Whatever works.
+            elif updateMode == "mfClassified":
+                record["m_speakingTime"] = mf_data[0]
+                record["f_speakingTime"] = mf_data[1]
+                record["m_speakingRatio"] = mf_data[2]
+                record["f_speakingRatio"] = mf_data[3]
+                
     # write resultant data to file
     with open("reports.json", "w") as jsonFile:
         json.dump(data, jsonFile, indent=4)
@@ -92,39 +106,102 @@ def allowed_file(filename):
 @app.route('/', methods=['GET', 'POST'])
 def upload_file():
     if request.method == 'POST':
-        # check if the post request has the file part
+        # check if the post request has a file. Form submission will not have file.
         if 'file' not in request.files:
-            print('no file part')
+        
+            print('--- Received form data:')
             print(request.form)
-            # flash('No file part')
-            # return redirect(request.url)
+            print('---')
+            
+            # TODO: Process all records in reports.json to get aggregate stats
+            if request.form['processaction'] == 'Process ALL Files':
+            
+                print('Processing all files in reports.json...')
+                
+                # Possible way to do this:
+                # Iterate through records in the JSON using method similar to in findRecordAndUpdate()
+                    # m_total: Add up all the speaking times for males
+                    # f_total: Add up all the speaking times for females
+                    # total_time: Add up all lengthWithoutSilence values
+                    
+                # m_total_ratio: Divide m_total by total_time
+                # f_total_ratio: Divide f_total by total_time
+                
+                # Write values to reports.json similar to in findRecordAndUpdate(). You will not need
+                # find the record, as the "aggregate_report_data" is the only object of its kind and
+                # is not in an array. I did not test this, but Something like:
+                '''
+                with open("reports.json", "r") as jsonFile:
+                    data = json.load(jsonFile)
+                    
+                data["aggregate_report_data"]["m_total_ratio"] = newValue
+                data["aggregate_report_data"]["f_total_ratio"] = newValue
+                data["aggregate_report_data"]["m_total_time"] = newValue
+                data["aggregate_report_data"]["f_total_time"] = newValue
+                data["aggregate_report_data"]["total_time"] = newValue
+                            
+                # write resultant data to file
+                with open("reports.json", "w") as jsonFile:
+                    json.dump(data, jsonFile, indent=4)
+                '''
+                
+                # Create visualization from ratios
+                # update webdata.img_src
+                
+                # Refresh webpage with updated image
+                return render_template('index.html', data=webdata)
+                
             if 'silenceremoval' in request.form['analysis']:
+            
                 fileToProcess = './uploads/' + request.form['fileToProcess']
+                # Handle malformed user input
                 if '.wav' not in fileToProcess:
                     flash('ERROR: Please enter a .wav file from the list above as the file to process.')
                     return render_template('index.html', data=webdata)
                 if not os.path.isfile(fileToProcess):
                     flash('ERROR: Please enter a .wav file from the list above as the file to process.')
                     return render_template('index.html', data=webdata)
+                    
                 print('Calling silenceUtil...')
+                
                 processedFile = webUtil.removeSilence(fileToProcess, 0.1, 0.1)
-                findRecordAndUpdate(request.form['fileToProcess'], "lengthWithoutSilence")
+                
+                # Find file record in records.json and update its lengthWithoutSilence
+                findRecordAndUpdate(request.form['fileToProcess'], "silenceRemoved")
+                
+                # Refresh file list after adding the -nosilence file
                 if (processedFile):
                     getNewFilesInFolder()
                     return render_template('index.html', data=webdata)
                 else:
                     flash('ERROR: Silence removal failed.')
                     return render_template('index.html', data=webdata)
+                    
             elif 'speakerdiarization' in request.form['analysis']:
                 print('Speaker diarization')
                 return render_template('index.html', data=webdata)
+                
             elif 'mfclassification' in request.form['analysis']:
+                # TODO: Run mf_classification and do something with results
                 print('Male/Female Classification')
                 fileToProcess = './uploads/' + request.form['fileToProcess']
-                # CALL to webUtil
-                [male, female] = webUtil.mf_classify(fileToProcess)
-                webdata.ratio_male = male
-                webdata.ratio_female = female
+                
+                # Call to webUtil mf_classify function. Should return speaking times and 
+                # percentages of males and females.
+                [m_ratio, f_ratio, m_time, f_time] = webUtil.mf_classify(fileToProcess)
+                
+                # TODO: Write total times and ratios to reports.json file
+                
+                # TODO: Create visualization with ratios
+                
+                # TODO: Send visualization to frontend.
+                # This will probably be in the form of setting webdata.img_src to the name of 
+                # the file generated from the visualization code.
+
+                # render_template() is called to refresh the index.html page. It sends the
+                # webdata object to index.html so that we can use its objects in the HTML
+                # code. See my example of iterating through the list of uploaded files 
+                # on the frontend.
                 return render_template('index.html', data=webdata)
         else:
             file = request.files['file']
@@ -142,7 +219,9 @@ def upload_file():
 
                 reports_length = len(data["individual_report_data"])
                 length = computeLengthOfFile(fullFilePath)
-                num_speakers = 5 # should get from user input
+                
+                # TODO: Get num_speakers from user input box on file upload
+                num_speakers = 5
                 
                 new_file_data = {
                         "basename": filename,
