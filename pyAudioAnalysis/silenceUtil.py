@@ -29,12 +29,9 @@ from pyAudioAnalysis import audioSegmentation as aS
 # filename = args.inputfile
 # smoothing = args.smoothingWindow
 # weightThresh = args.weight
-
-def removeSilence(filename, smoothing, weightThresh):
-    print('Attempting to remove silence from ' + filename + '...')
     
 
-def util(filename, smoothing, weightThresh):
+def removeSilence(filename, smoothing, weightThresh):
     print('Removing silence from ' + filename + '...')
 
     # Use pAA to remove silence and get the segments with audio.
