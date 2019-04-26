@@ -40,7 +40,25 @@ def computeLengthOfFile(wavFile):
         print(duration)
         return duration
         
+def findRecordAndUpdate(filename, fieldToUpdate, newValue=""):
 
+    print('file to find and update: ', filename)
+    print('field: ', fieldToUpdate)
+    print('new value: ', newValue)
+
+    with open("reports.json", "r") as jsonFile:
+        data = json.load(jsonFile)
+        
+    for record in data["individual_report_data"]:
+        if record["basename"] == filename:
+            if fieldToUpdate == "lengthWithoutSilence":
+                fullFilePath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+                record[fieldToUpdate] = computeLengthOfFile(fullFilePath)
+            else:
+                record[fieldToUpdate] = newValue
+
+    with open("reports.json", "w") as jsonFile:
+        json.dump(data, jsonFile, indent=4)
 
 getFilesInFolder()
 
@@ -78,12 +96,12 @@ def upload_file():
                     return render_template('index.html', data=uploaded_files)
                 print('Calling silenceUtil...')
                 processedFile = silenceUtil.removeSilence(fileToProcess, 0.1, 0.1)
-                
+                findRecordAndUpdate(request.form['fileToProcess'], "lengthWithoutSilence")
                 if (processedFile):
                     getNewFilesInFolder()
                     return render_template('index.html', data=uploaded_files)
                 else:
-                    flash('ERROR: Silence removal errored.')
+                    flash('ERROR: Silence removal failed.')
                     return render_template('index.html', data=uploaded_files)
             elif 'speakerdiarization' in request.form:
                 print('Speaker diarization')

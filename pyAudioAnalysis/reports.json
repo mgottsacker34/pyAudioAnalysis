@@ -1,15 +1,25 @@
 {
+    "aggregate_report_data": {},
     "individual_report_data": [
         {
-            "m_speakingTime": 0,
+            "length": 684.5690416666666,
             "basename": "part-2.wav",
             "f_speakingTime": 0,
-            "lengthWithoutSilence": 0,
             "m_speakingRatio": 0,
+            "m_speakingTime": 0,
             "num_speakers": 5,
-            "length": 684.5690416666666,
+            "lengthWithoutSilence": 0,
+            "f_speakingRatio": 0
+        },
+        {
+            "length": 5,
+            "basename": "sounds.wav",
+            "f_speakingTime": 0,
+            "m_speakingRatio": 0,
+            "m_speakingTime": 0,
+            "num_speakers": 5,
+            "lengthWithoutSilence": 2.85,
             "f_speakingRatio": 0
         }
-    ],
-    "aggregate_report_data": {}
+    ]
 }
