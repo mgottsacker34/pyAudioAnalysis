@@ -5,14 +5,28 @@ import glob
 import argparse
 from pydub import AudioSegment
 import scipy.io.wavfile as wavfile
+import matplotlib.pyplot as mp
 
 from pyAudioAnalysis import audioBasicIO as aIO
 from pyAudioAnalysis import audioSegmentation as aS
 
+def produceVisuals(results):
+	print('drawing visuals from evaluation')
+	labels = 'Male', 'Female', 'Unknown'
+	sizes = [results[0],results[1],results[2]]
+
+	fig0,ax0 = mp.subplots()
+	ax0.pie(sizes, labels = labels, autopct='%1.1f%%',shadow=False,startangle = 180)
+	
+	ax0.axis('equal')
+	mp.title('Evaluation')
+
+	mp.show()
+
 def mf_classify(filename):
     print('processing: ', filename)
     
-    m_flags, f_flags, m_ratio, f_ratio, m_time, f_time = 0
+    m_flags, f_flags, unk_flags unk_ratio,m_ratio, f_ratio, unk_ratio,m_time, f_time,unk_time = 0
     
     # TODO: Update model or method of classifying male/female speakers
 
@@ -23,17 +37,26 @@ def mf_classify(filename):
     print('CM:         ', CM)
     
     # TODO: One way to compute things
-    
-    # m_flags: Sum up the number of times 0 (male) appears in flagsInd 
-    # f_flags: Sum up the number of times 1 (female) appears in flagsInd
-    # m_ratio: Divide m_flags by total number of flags
-    # f_ratio: Divide f_flags by total number of flags
-    # m_time: Multiply m_flags by length of each segment (0.2 seconds ?)
-    # f_time: Multiply f_flags by length of each segment
-    
-    return [m_ratio, f_ratio, m_time, f_time]
+    for i in flagsInd:
+        if (i==0):
+            m_flags += 1
+        elif(i==1):
+            f_flags += 1
+        else:
+	    unk_flags += 1
 
+    m_ratio = m_flags/len(flagsInd)
+    f_ratio = f_flags/len(flagsInd)
+    unk_ratio = unk_flags/len(flagsInd)
 
+    m_time = m_flags*0.2
+    f_time = f_flags*0.2
+    unk_time = unk_flags*0.2
+
+    #AGGREGATE THEM ALL INTO A LIST
+    majorKeys = [m_ratio,f_ratio,unk_ratio,m_time,f_time,unk_time]
+    return majorKeys
+	produceVisuals(majorKeys)
 
 def removeSilence(filename, smoothing, weightThresh):
     print('Removing silence from ' + filename + '...')

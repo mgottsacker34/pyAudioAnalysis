@@ -28,6 +28,7 @@ webdata = {
     "img_src": ""
 }
 
+
 # Store list of uploaded files. Called when web app is first run
 def getFilesInFolder():
     for (dirpath, dirnames, filenames) in os.walk(UPLOAD_FOLDER):
@@ -189,6 +190,8 @@ def upload_file():
                 # Call to webUtil mf_classify function. Should return speaking times and 
                 # percentages of males and females.
                 [m_ratio, f_ratio, m_time, f_time] = webUtil.mf_classify(fileToProcess)
+		
+		
                 
                 # TODO: Write total times and ratios to reports.json file
                 

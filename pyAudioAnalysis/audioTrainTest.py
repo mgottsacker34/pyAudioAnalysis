@@ -310,6 +310,10 @@ def featureAndTrain(list_of_dirs, mt_win, mt_step, st_win, st_step,
     if len(features) == 0:
         print("trainSVM_feature ERROR: No data found in any input folder!")
         return
+    print('***--- printing FEATURES ---***')
+    print('\n')
+
+    print(features)
 
     n_feats = features[0].shape[1]
     feature_names = ["features" + str(d + 1) for d in range(n_feats)]
@@ -1031,7 +1035,7 @@ def writeTrainDataToARFF(model_name, features, classNames, feature_names):
     f.write('@DATA\n')
     for c, fe in enumerate(features):
         for i in range(fe.shape[0]):
-            for j in range(fe.shape[1]):
+            for j in range(fe.shape[0]):
                 f.write("{0:f},".format(fe[i, j]))
             f.write(classNames[c]+"\n")
     f.close()
