@@ -617,8 +617,8 @@ def mtFileClassification(input_file, model_name, model_type,
                 flags_ind_gt.append(-1)
         flags_ind_gt = numpy.array(flags_ind_gt)
         cm = numpy.zeros((len(class_names_gt), len(class_names_gt)))
-        for i in range(min(flags_ind.shape[0], flags_ind_gt.shape[0])):
-            cm[int(flags_ind_gt[i]),int(flags_ind[i])] += 1
+        #for i in range(min(flags_ind.shape[0], flags_ind_gt.shape[0])-1):
+        #    cm[int(flags_ind_gt[i]),int(flags_ind[i])] += 1
     else:
         cm = []
         flags_ind_gt = numpy.array([])
