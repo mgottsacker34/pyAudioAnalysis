@@ -5,13 +5,14 @@ import glob
 import argparse
 from pydub import AudioSegment
 import scipy.io.wavfile as wavfile
-import matplotlib.pyplot as mp
+from matplotlib import pyplot as mp
 
 from pyAudioAnalysis import audioBasicIO as aIO
 from pyAudioAnalysis import audioSegmentation as aS
 
-def produceVisuals(results):
+def produceVisuals(filename,results):
 	print('drawing visuals from evaluation')
+	
 	labels = 'Male', 'Female', 'Unknown'
 	sizes = [results[0],results[1],results[2]]
 
@@ -21,7 +22,7 @@ def produceVisuals(results):
 	ax0.axis('equal')
 	mp.title('Evaluation')
 
-	mp.show()
+	mp.savefig('%.png',filename)
 
 def mf_classify(filename):
     print('processing: ', filename)

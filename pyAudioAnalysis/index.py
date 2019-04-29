@@ -189,15 +189,14 @@ def upload_file():
                 
                 # Call to webUtil mf_classify function. Should return speaking times and 
                 # percentages of males and females.
-                [m_ratio, f_ratio, m_time, f_time] = webUtil.mf_classify(fileToProcess)
-		
-		
-                
+                [m_ratio, f_ratio, unk_ratio, m_time, f_time, unk_time] = webUtil.mf_classify(fileToProcess)
+                majorKeys = [m_ratio,f_ratio,unk_ratio,m_time,f_time,unk_time]
                 # TODO: Write total times and ratios to reports.json file
-                
+                #webUtil.produceVisuals(fileToProcess,majorKeys)
                 # TODO: Create visualization with ratios
-                
+                webUtil.produceVisuals(fileToProcess,majorKeys)
                 # TODO: Send visualization to frontend.
+		
                 # This will probably be in the form of setting webdata.img_src to the name of 
                 # the file generated from the visualization code.
 
