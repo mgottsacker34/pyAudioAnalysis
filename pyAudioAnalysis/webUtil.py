@@ -11,27 +11,41 @@ from pyAudioAnalysis import audioBasicIO as aIO
 from pyAudioAnalysis import audioSegmentation as aS
 
 def produceVisuals(filename,results):
-	print('drawing visuals from evaluation')
-	
-	labels = 'Male', 'Female', 'Unknown'
-	sizes = [results[0],results[1],results[2]]
+    print('drawing visuals from evaluation')
+    
+    labels = 'Male', 'Female', 'Unknown'
+    sizes = [results[0],results[1],results[2]]
 
-	fig0,ax0 = mp.subplots()
-	ax0.pie(sizes, labels = labels, autopct='%1.1f%%',shadow=False,startangle = 180)
-	
-	ax0.axis('equal')
-	mp.title('Evaluation')
+    fig0,ax0 = mp.subplots()
+    ax0.pie(sizes, labels = labels, autopct='%1.1f%%',shadow=False,startangle = 180)
+    
+    ax0.axis('equal')
+    mp.title('Evaluation')
 
-	mp.savefig('%.png',filename)
+    picPath = (filename + '.png')
+    print(picPath)
+    mp.savefig(picPath)
+    return picPath
+    
 
 def mf_classify(filename):
     print('processing: ', filename)
     
-    m_flags, f_flags, unk_flags unk_ratio,m_ratio, f_ratio, unk_ratio,m_time, f_time,unk_time = 0
+    m_flags = 0
+    f_flags = 0
+    unk_flags = 0 
+    unk_ratio = 0 
+    m_ratio = 0 
+    f_ratio = 0
+    unk_ratio = 0
+    m_time = 0
+    f_time = 0
+    unk_time = 0
     
     # TODO: Update model or method of classifying male/female speakers
+    gtFile = filename.replace(".wav", ".segments")
 
-    [flagsInd, classesAll, acc, CM] = aS.mtFileClassification(filename, "data/knnSpeakerFemaleMale", "knn", plot_results=False)
+    [flagsInd, classesAll, acc, CM] = aS.mtFileClassification(filename, "data/knnSpeakerFemaleMale", "knn", plot_results=False, gt_file=gtFile)
     print('flagsInd:   ', flagsInd)
     print('classesAll: ', classesAll)
     print('acc:        ', acc)
@@ -44,7 +58,7 @@ def mf_classify(filename):
         elif(i==1):
             f_flags += 1
         else:
-	    unk_flags += 1
+            unk_flags += 1
 
     m_ratio = m_flags/len(flagsInd)
     f_ratio = f_flags/len(flagsInd)
@@ -57,7 +71,6 @@ def mf_classify(filename):
     #AGGREGATE THEM ALL INTO A LIST
     majorKeys = [m_ratio,f_ratio,unk_ratio,m_time,f_time,unk_time]
     return majorKeys
-	produceVisuals(majorKeys)
 
 def removeSilence(filename, smoothing, weightThresh):
     print('Removing silence from ' + filename + '...')

@@ -194,7 +194,8 @@ def upload_file():
                 # TODO: Write total times and ratios to reports.json file
                 #webUtil.produceVisuals(fileToProcess,majorKeys)
                 # TODO: Create visualization with ratios
-                webUtil.produceVisuals(fileToProcess,majorKeys)
+                webdata["img_src"] = webUtil.produceVisuals(fileToProcess,majorKeys)
+                print("img_src", webdata["img_src"])
                 # TODO: Send visualization to frontend.
 		
                 # This will probably be in the form of setting webdata.img_src to the name of 
