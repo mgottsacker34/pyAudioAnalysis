@@ -33,6 +33,7 @@ def produceVisuals(filename,results):
 def visualizeAggregateData(m_ratio, f_ratio):
     labels = 'Male', 'Female'
     sizes = [m_ratio, f_ratio]
+    print(sizes)
     
     fig0,ax0 = mp.subplots()
     ax0.pie(sizes, labels=labels, autopct='%1.1f%%',shadow=False, startangle=180, colors=['#75d2e5','#f7b2bd'])
@@ -40,7 +41,7 @@ def visualizeAggregateData(m_ratio, f_ratio):
     ax0.axis('equal')
     #mp.title('Evaluation')
 
-    picPath = ('./uploads/aggregateData.png')
+    picPath = "./uploads/aggregateData.png"
     mp.savefig(picPath)
     return picPath
     
@@ -81,8 +82,8 @@ def mf_classify(filename):
     f_ratio = f_flags/len(flagsInd)
     unk_ratio = unk_flags/len(flagsInd)
 
-    #m_time = m_flags*0.2
-    #f_time = f_flags*0.2
+    m_time = m_flags
+    f_time = f_flags
     unk_time = unk_flags*0.2
 
     #AGGREGATE THEM ALL INTO A LIST

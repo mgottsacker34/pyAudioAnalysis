@@ -79,8 +79,8 @@ def findRecordAndUpdate(filename, updateMode, mf_data=[0,0,0,0]):
             elif updateMode == "mfClassified":
                 print('setting times and ratios')
                 print(mf_data[2] * record["lengthWithoutSilence"])
-                record["m_speakingTime"] = mf_data[2] * record["lengthWithoutSilence"]
-                record["f_speakingTime"] = mf_data[3] * record["lengthWithoutSilence"]
+                record["m_speakingTime"] = mf_data[0] #* record["lengthWithoutSilence"]
+                record["f_speakingTime"] = mf_data[1] #* record["lengthWithoutSilence"]
                 record["m_speakingRatio"] = mf_data[2]
                 record["f_speakingRatio"] = mf_data[3]
                 
@@ -172,7 +172,7 @@ def upload_file():
                 webdata["f_ratio"] = f_total_ratio
                 webdata["total_time"] = total_time
                 # Create visualization from ratios
-                webdata["img_src"] = webUtil.visualizeAggregateData(m_total_ratio, f_total_ratio)
+                webdata["img_src"] = webUtil.visualizeAggregateData(m_total, f_total)
                 print("img_src", webdata["img_src"])
                 
                 # Refresh webpage with updated image
@@ -200,8 +200,8 @@ def upload_file():
                 webdata["img_src"] = webUtil.produceVisuals(fileToProcess,majorKeys)
                 print("img_src", webdata["img_src"])
                 # Share visualization info with frontend.
-                #webdata["m_time"] = m_time
-                #webdata["f_time"] = f_time
+                webdata["m_time"] = m_time
+                webdata["f_time"] = f_time
                 webdata["m_ratio"] = m_ratio
                 webdata["f_ratio"] = f_ratio
                 webdata["type"] = "individual"
@@ -247,7 +247,7 @@ def upload_file():
                     json.dump(data, jsonFile, indent=4)
                 
                 json.dumps(data, indent=4)
-                webdata["uploaded_files"].append(filename)
+                getFilesInFolder()
                 
                 fileToProcess = './uploads/' + filename
                 # Handle malformed user input

@@ -1,12 +1,41 @@
 {
     "aggregate_report_data": {
-        "f_total_ratio": 0,
-        "total_time": 0,
-        "m_total_time": 0,
-        "m_total_ratio": 0,
-        "f_total_time": 0
+        "f_total_time": 344,
+        "m_total_ratio": 0.7505512883759233,
+        "f_total_ratio": 0.25018376279197446,
+        "m_total_time": 1032,
+        "total_time": 1374.9893124999999
     },
     "individual_report_data": [
-        
+        {
+            "m_speakingRatio": 0.7239915074309978,
+            "basename": "meeting_2019-02-12_123000.00.wav",
+            "m_speakingTime": 341,
+            "f_speakingTime": 130,
+            "length": 684.5690416666666,
+            "num_speakers": 5,
+            "lengthWithoutSilence": 470.6497083333333,
+            "f_speakingRatio": 0.2760084925690021
+        },
+        {
+            "m_speakingRatio": 0.6814345991561181,
+            "basename": "meeting_2019-02-15_173000.00.wav",
+            "m_speakingTime": 323,
+            "f_speakingTime": 151,
+            "length": 658.9637916666667,
+            "num_speakers": 5,
+            "lengthWithoutSilence": 473.54985416666665,
+            "f_speakingRatio": 0.31856540084388185
+        },
+        {
+            "m_speakingRatio": 0.8538283062645011,
+            "basename": "meeting_2019-02-16_093000.00.wav",
+            "m_speakingTime": 368,
+            "f_speakingTime": 63,
+            "length": 624.4138333333333,
+            "num_speakers": 5,
+            "lengthWithoutSilence": 430.78975,
+            "f_speakingRatio": 0.14617169373549885
+        }
     ]
 }
