@@ -24,13 +24,13 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Data structure to store all webapp info. This will be passed to front end.
 webdata = {
     "uploaded_files": [],
-    "ratio_male": 0.0,
-    "ratio_female": 0.0,
     "img_src": "",
     "type": "none",
     "name": "",
     "m_time": 0,
     "f_time": 0,
+    "m_ratio": 0.0,
+    "f_ratio": 0.0,
     "total_time": 0
 }
 
@@ -77,10 +77,17 @@ def findRecordAndUpdate(filename, updateMode, mf_data=[0,0,0,0]):
             # Right now, it takes an array as a parameter, so the mf_data values MUST BE IN THIS ORDER.
             # We could also use a dict, so that order wouldn't matter. Whatever works.
             elif updateMode == "mfClassified":
-                record["m_speakingTime"] = mf_data[0]
-                record["f_speakingTime"] = mf_data[1]
+                print('setting times and ratios')
+                print(mf_data[2] * record["lengthWithoutSilence"])
+                record["m_speakingTime"] = mf_data[2] * record["lengthWithoutSilence"]
+                record["f_speakingTime"] = mf_data[3] * record["lengthWithoutSilence"]
                 record["m_speakingRatio"] = mf_data[2]
                 record["f_speakingRatio"] = mf_data[3]
+                
+                # Update webdata here
+                webdata["m_time"] = (mf_data[2] * record["lengthWithoutSilence"])
+                webdata["f_time"] = (mf_data[3] * record["lengthWithoutSilence"])
+                webdata["total_time"] = record["lengthWithoutSilence"]
                 
     # write resultant data to file
     with open("reports.json", "w") as jsonFile:
@@ -118,7 +125,6 @@ def upload_file():
             
                 print('Processing all files in reports.json...')
             
-        
                 # Possible way to do this:
                 # Iterate through records in the JSON using method similar to in findRecordAndUpdate()
                 m_total = 0
@@ -138,9 +144,7 @@ def upload_file():
                 m_total_ratio = m_total/total_time
                 f_total_ratio = f_total/total_time
                 
-                # Write values to reports.json similar to in findRecordAndUpdate(). You will not need
-                # find the record, as the "aggregate_report_data" is the only object of its kind and
-                # is not in an array. I did not test this, but Something like:
+                # Write values to reports.json similar to in findRecordAndUpdate(). 
                 
                 with open("reports.json", "r") as jsonFile:
                     data = json.load(jsonFile)
@@ -158,15 +162,23 @@ def upload_file():
                 # write resultant data to file
                 with open("reports.json", "w") as jsonFile:
                     json.dump(data, jsonFile, indent=4)
-                
-                
+
+                # update webdata object
+                webdata["type"] = "aggregate"
+                webdata["name"] = ""
+                webdata["m_time"] = m_total
+                webdata["f_time"] = f_total
+                webdata["m_ratio"] = m_total_ratio
+                webdata["f_ratio"] = f_total_ratio
+                webdata["total_time"] = total_time
                 # Create visualization from ratios
-                # update webdata.img_src
+                webdata["img_src"] = webUtil.visualizeAggregateData(m_total_ratio, f_total_ratio)
+                print("img_src", webdata["img_src"])
                 
                 # Refresh webpage with updated image
                 return render_template('index.html', data=webdata)
                 
-            if request.form['processaction'] == "Remove Silence":
+            elif request.form['processaction'] == "Remove Silence":
             
                 fileToProcess = './uploads/' + request.form['fileToProcess']
                 # Handle malformed user input
@@ -182,7 +194,9 @@ def upload_file():
                 processedFile = webUtil.removeSilence(fileToProcess, 0.1, 0.1)
                 
                 # Find file record in records.json and update its lengthWithoutSilence
-                findRecordAndUpdate(request.form['fileToProcess'], "silenceRemoved")
+                basename = request.form['fileToProcess']
+                
+                findRecordAndUpdate(basename, updateMode="silenceRemoved")
                 
                 # Refresh file list after adding the -nosilence file
                 if (processedFile):
@@ -193,7 +207,7 @@ def upload_file():
                     return render_template('index.html', data=webdata)
                 
             elif request.form['processaction'] == "Classify Male/Female":
-                # TODO: Run mf_classification and do something with results
+                # Run mf_classification
                 print('Male/Female Classification')
                 fileToProcess = './uploads/' + request.form['fileToProcess']
                 
@@ -202,16 +216,24 @@ def upload_file():
                 [m_ratio, f_ratio, unk_ratio, m_time, f_time, unk_time] = webUtil.mf_classify(fileToProcess)
                 majorKeys = [m_ratio,f_ratio,unk_ratio,m_time,f_time,unk_time]
                 # TODO: Write total times and ratios to reports.json file
-                #webUtil.produceVisuals(fileToProcess,majorKeys)
-                # TODO: Create visualization with ratios
-                webdata["img_src"] = webUtil.produceVisuals(fileToProcess,majorKeys)
+                longname = request.form['fileToProcess']
+                print("---longname",longname)
+                basename = longname.replace('-nosilence.wav', '.wav')
+                print("---basename", basename)
+               
                 
-                print("img_src", webdata["img_src"])
-                # TODO: Send visualization to frontend.
-		
-                # This will probably be in the form of setting webdata.img_src to the name of 
-                # the file generated from the visualization code.
+                findRecordAndUpdate(basename, updateMode="mfClassified", mf_data=[m_time, f_time, m_ratio, f_ratio])
 
+                # Create visualization with ratios
+                webdata["img_src"] = webUtil.produceVisuals(fileToProcess,majorKeys)
+                print("img_src", webdata["img_src"])
+                # Share visualization info with frontend.
+                #webdata["m_time"] = m_time
+                #webdata["f_time"] = f_time
+                webdata["m_ratio"] = m_ratio
+                webdata["f_ratio"] = f_ratio
+                webdata["type"] = "individual"
+                webdata["name"] = longname
                 # render_template() is called to refresh the index.html page. It sends the
                 # webdata object to index.html so that we can use its objects in the HTML
                 # code. See my example of iterating through the list of uploaded files 

@@ -31,7 +31,7 @@
   
   <div id="content">
 
-      <div class="jumbotron">
+      <div class="jumbotron" style="padding-top: 1rem; padding-bottom: 1rem;">
         <h1>Meeting Analysis Tool</h1>
         <p>Upload a .wav audio file to analyze.</p>
       </div>
@@ -86,8 +86,8 @@
                         <hr>
                         <h4>Actions:</h4>
                         <input type="submit" name="processaction" value="Remove Silence" class="btn btn-info" style="margin: 0.5em;" onclick="$('#loading').show(); $('#content').hide()"></input>
-                        <input type="submit" name="processaction" value="Classify Male/Female" class="btn btn-primary" style="margin: 0.5em;"></input>
-                        <input type="submit" name="processaction" value="Statistics For All Files" class="btn btn-secondary" style="margin: 0.5em;"></input>
+                        <input type="submit" name="processaction" value="Classify Male/Female" class="btn btn-primary" style="margin: 0.5em;" onclick="$('#loading').show(); $('#content').hide()"></input>
+                        <input type="submit" name="processaction" value="Statistics For All Files" class="btn btn-secondary" style="margin: 0.5em;" onclick="$('#loading').show(); $('#content').hide()"></input>
                       </fieldset>
                     </form>
                   </div>
@@ -96,33 +96,94 @@
             </div>
           </div>
           <div class="col-lg-6">
-            <h2>Results</h2>
+            <!-- <h2>Results</h2> -->
 
             {% if data.type == "individual" %}
-                <h3>Analysis of audio file {{ data.name }}</h3>
+                <h5>Analysis of audio file <strong>{{ data.name }}</strong></h5>
                 <img src="{{ data.img_src }}" />
                 <div class="row">
-                    <div class="col-md-12">
-                        <p>Total time of audio:    {{ data.total_time }} </p>
-                        <p>Time talked by males:   {{ data.m_time }} </p>
-                        <p>Time talked by females: {{ data.f_time }} </p>
-                        <br>
-                        <p>Ratio male:             {{ data.m_ratio }} </p>
-                        <p>Ratio female:           {{ data.f_ratio }} </p>
+                    <div class="col-md-6">
+                        Total time (seconds) of audio:
+                    </div>
+                    <div class="col-md-6">
+                        {{ data.total_time }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        Time talked by males:   
+                    </div>
+                    <div class="col-md-6">
+                        {{ data.m_time }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        Time talked by females: 
+                    </div>
+                    <div class="col-md-6">
+                        {{ data.f_time }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        Ratio male:
+                    </div>
+                    <div class="col-md-6">
+                        {{ data.m_ratio }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        Ratio female:
+                    </div>
+                    <div class="col-md-6">
+                        {{ data.f_ratio }}
                     </div>
                 </div>
             
+            
             {% elif data.type == "aggregate" %}
-                <h3>Analysis of all audio files</h3>
+                <h5>Analysis of <strong>all audio files</strong></h5>
                 <img src="{{ data.img_src }}" />
                 <div class="row">
-                    <div class="col-md-12">
-                        <p>Total time of audio:    {{ data.total_time }} </p>
-                        <p>Time talked by males:   {{ data.m_time }} </p>
-                        <p>Time talked by females: {{ data.f_time }} </p>
-                        <br>
-                        <p>Ratio male:             {{ data.m_ratio }} </p>
-                        <p>Ratio female:           {{ data.f_ratio }} </p>
+                    <div class="col-md-6">
+                        Total time (seconds) of audio:
+                    </div>
+                    <div class="col-md-6">
+                        {{ data.total_time }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        Time talked by males:   
+                    </div>
+                    <div class="col-md-6">
+                        {{ data.m_time }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        Time talked by females: 
+                    </div>
+                    <div class="col-md-6">
+                        {{ data.f_time }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        Ratio male:
+                    </div>
+                    <div class="col-md-6">
+                        {{ data.m_ratio }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        Ratio female:
+                    </div>
+                    <div class="col-md-6">
+                        {{ data.f_ratio }}
                     </div>
                 </div>
             {% endif %}

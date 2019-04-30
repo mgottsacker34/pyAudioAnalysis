@@ -13,18 +13,34 @@ from pyAudioAnalysis import audioSegmentation as aS
 def produceVisuals(filename,results):
     print('drawing visuals from evaluation')
     
-    labels = 'Male', 'Female', 'Unknown'
-    sizes = [results[0],results[1],results[2]]
+    #labels = 'Male', 'Female', 'Unknown'
+    #sizes = [results[0],results[1],results[2]]
+    labels = 'Male', 'Female'
+    sizes = [results[0], results[1]]
 
     fig0,ax0 = mp.subplots()
-    ax0.pie(sizes, labels = labels, autopct='%1.1f%%',shadow=False,startangle = 180)
+    ax0.pie(sizes, labels=labels, autopct='%1.1f%%',shadow=False, startangle=180, colors=['#75d2e5','#f7b2bd'])
     
     ax0.axis('equal')
-    mp.title('Evaluation')
+    #mp.title('Evaluation')
 
     picPath = (filename + '.png')
     #picPath = picPath.replace('./uploads/', './uploads/viz/')
     print(picPath)
+    mp.savefig(picPath)
+    return picPath
+    
+def visualizeAggregateData(m_ratio, f_ratio):
+    labels = 'Male', 'Female'
+    sizes = [m_ratio, f_ratio]
+    
+    fig0,ax0 = mp.subplots()
+    ax0.pie(sizes, labels=labels, autopct='%1.1f%%',shadow=False, startangle=180, colors=['#75d2e5','#f7b2bd'])
+    
+    ax0.axis('equal')
+    #mp.title('Evaluation')
+
+    picPath = ('./uploads/aggregateData.png')
     mp.savefig(picPath)
     return picPath
     
@@ -43,7 +59,7 @@ def mf_classify(filename):
     f_time = 0
     unk_time = 0
     
-    # TODO: Update model or method of classifying male/female speakers
+    # method of classifying male/female speakers
     gtFile = filename.replace(".wav", ".segments")
 
     [flagsInd, classesAll, acc, CM] = aS.mtFileClassification(filename, "data/knnSpeakerFemaleMale", "knn", plot_results=False, gt_file=gtFile)
@@ -52,7 +68,7 @@ def mf_classify(filename):
     print('acc:        ', acc)
     print('CM:         ', CM)
     
-    # TODO: One way to compute things
+    # Add up each classified flag
     for i in flagsInd:
         if (i==0):
             m_flags += 1
@@ -65,8 +81,8 @@ def mf_classify(filename):
     f_ratio = f_flags/len(flagsInd)
     unk_ratio = unk_flags/len(flagsInd)
 
-    m_time = m_flags*0.2
-    f_time = f_flags*0.2
+    #m_time = m_flags*0.2
+    #f_time = f_flags*0.2
     unk_time = unk_flags*0.2
 
     #AGGREGATE THEM ALL INTO A LIST

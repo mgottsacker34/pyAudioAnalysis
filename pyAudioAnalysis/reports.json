@@ -1,61 +1,12 @@
 {
     "aggregate_report_data": {
-        "total_time": 438.1496041666667,
-        "m_total_ratio": 0.0,
+        "total_time": 0,
         "f_total_time": 0,
         "m_total_time": 0,
-        "f_total_ratio": 0.0
+        "f_total_ratio": 0,
+        "m_total_ratio": 0
     },
     "individual_report_data": [
-        {
-            "num_speakers": 5,
-            "m_speakingTime": 0,
-            "basename": "sounds.wav",
-            "f_speakingRatio": 0,
-            "m_speakingRatio": 0,
-            "lengthWithoutSilence": 2.1699166666666665,
-            "length": 2.85,
-            "f_speakingTime": 0
-        },
-        {
-            "num_speakers": 5,
-            "m_speakingTime": 0,
-            "basename": "part-1.wav",
-            "f_speakingRatio": 0,
-            "m_speakingRatio": 0,
-            "lengthWithoutSilence": 430.88975,
-            "length": 624.4138333333333,
-            "f_speakingTime": 0
-        },
-        {
-            "num_speakers": 5,
-            "m_speakingTime": 0,
-            "basename": "diarizationExample.wav",
-            "f_speakingRatio": 0,
-            "m_speakingRatio": 0,
-            "lengthWithoutSilence": 0,
-            "length": 41.984,
-            "f_speakingTime": 0
-        },
-        {
-            "num_speakers": 5,
-            "m_speakingTime": 0,
-            "basename": "count.wav",
-            "f_speakingRatio": 0,
-            "m_speakingRatio": 0,
-            "lengthWithoutSilence": 5.0899375,
-            "length": 5.868,
-            "f_speakingTime": 0
-        },
-        {
-            "num_speakers": 5,
-            "m_speakingTime": 0,
-            "m_speakingRatio": 0,
-            "f_speakingTime": 0,
-            "basename": "diarizationExample.wav",
-            "lengthWithoutSilence": 0,
-            "length": 41.984,
-            "f_speakingRatio": 0
-        }
+        
     ]
 }
