@@ -1,51 +1,61 @@
 {
+    "aggregate_report_data": {
+        "total_time": 438.1496041666667,
+        "m_total_ratio": 0.0,
+        "f_total_time": 0,
+        "m_total_time": 0,
+        "f_total_ratio": 0.0
+    },
     "individual_report_data": [
         {
+            "num_speakers": 5,
             "m_speakingTime": 0,
             "basename": "sounds.wav",
-            "num_speakers": 5,
+            "f_speakingRatio": 0,
             "m_speakingRatio": 0,
             "lengthWithoutSilence": 2.1699166666666665,
-            "f_speakingRatio": 0,
             "length": 2.85,
             "f_speakingTime": 0
         },
         {
+            "num_speakers": 5,
             "m_speakingTime": 0,
             "basename": "part-1.wav",
-            "num_speakers": 5,
+            "f_speakingRatio": 0,
             "m_speakingRatio": 0,
             "lengthWithoutSilence": 430.88975,
-            "f_speakingRatio": 0,
             "length": 624.4138333333333,
             "f_speakingTime": 0
         },
         {
+            "num_speakers": 5,
             "m_speakingTime": 0,
             "basename": "diarizationExample.wav",
-            "num_speakers": 5,
+            "f_speakingRatio": 0,
             "m_speakingRatio": 0,
             "lengthWithoutSilence": 0,
-            "f_speakingRatio": 0,
             "length": 41.984,
             "f_speakingTime": 0
         },
         {
+            "num_speakers": 5,
             "m_speakingTime": 0,
             "basename": "count.wav",
-            "num_speakers": 5,
+            "f_speakingRatio": 0,
             "m_speakingRatio": 0,
             "lengthWithoutSilence": 5.0899375,
-            "f_speakingRatio": 0,
             "length": 5.868,
             "f_speakingTime": 0
+        },
+        {
+            "num_speakers": 5,
+            "m_speakingTime": 0,
+            "m_speakingRatio": 0,
+            "f_speakingTime": 0,
+            "basename": "diarizationExample.wav",
+            "lengthWithoutSilence": 0,
+            "length": 41.984,
+            "f_speakingRatio": 0
         }
-    ],
-    "aggregate_report_data": {
-        "m_total_ratio": 0.0,
-        "total_time": 433.0396666666667,
-        "f_total_time": 0,
-        "f_total_ratio": 0.0,
-        "m_total_time": 0
-    }
+    ]
 }

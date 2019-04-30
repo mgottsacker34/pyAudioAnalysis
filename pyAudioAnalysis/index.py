@@ -27,15 +27,12 @@ webdata = {
     "ratio_male": 0.0,
     "ratio_female": 0.0,
     "img_src": "",
-    "file_info": {
-        "type": "individual",
-        "name": "",
-        "m_time": 0,
-        "f_time": 0,
-        "total_time": 0,
-    }
+    "type": "none",
+    "name": "",
+    "m_time": 0,
+    "f_time": 0,
+    "total_time": 0
 }
-
 
 # Store list of uploaded files. Called when web app is first run
 def getFilesInFolder():

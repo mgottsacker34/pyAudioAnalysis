@@ -96,12 +96,36 @@
             </div>
           </div>
           <div class="col-lg-6">
-            <h3>Results</h3>
+            <h2>Results</h2>
 
-            <!-- TODO: Display visualization -->
-            <!-- render_template() from index.py will refresh page with the updated webdata object -->
-            <!-- This is the wrong way to get the data, but it could be something like the following: -->
-            <img src="{{ data.img_src }}" />
+            {% if data.type == "individual" %}
+                <h3>Analysis of audio file {{ data.name }}</h3>
+                <img src="{{ data.img_src }}" />
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>Total time of audio:    {{ data.total_time }} </p>
+                        <p>Time talked by males:   {{ data.m_time }} </p>
+                        <p>Time talked by females: {{ data.f_time }} </p>
+                        <br>
+                        <p>Ratio male:             {{ data.m_ratio }} </p>
+                        <p>Ratio female:           {{ data.f_ratio }} </p>
+                    </div>
+                </div>
+            
+            {% elif data.type == "aggregate" %}
+                <h3>Analysis of all audio files</h3>
+                <img src="{{ data.img_src }}" />
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>Total time of audio:    {{ data.total_time }} </p>
+                        <p>Time talked by males:   {{ data.m_time }} </p>
+                        <p>Time talked by females: {{ data.f_time }} </p>
+                        <br>
+                        <p>Ratio male:             {{ data.m_ratio }} </p>
+                        <p>Ratio female:           {{ data.f_ratio }} </p>
+                    </div>
+                </div>
+            {% endif %}
 
 
           </div>
