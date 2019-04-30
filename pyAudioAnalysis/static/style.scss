@@ -1,0 +1,19 @@
+/* RGB */
+$color1: rgba(247, 178, 189, 1);
+$color2: rgba(117, 210, 229, 1);
+$color3: rgba(184, 51, 106, 1);
+$color4: rgba(114, 109, 168, 1);
+$color5: rgba(125, 140, 196, 1);
+
+.card-body {
+    background-color: $color1;
+    
+}
+
+div#loading {
+    width: 35px;
+    height: 35px;
+    display: none;
+    background: url(/static/ajax-loader.gif) no-repeat;
+    cursor: wait;
+}

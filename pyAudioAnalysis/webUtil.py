@@ -23,6 +23,7 @@ def produceVisuals(filename,results):
     mp.title('Evaluation')
 
     picPath = (filename + '.png')
+    #picPath = picPath.replace('./uploads/', './uploads/viz/')
     print(picPath)
     mp.savefig(picPath)
     return picPath

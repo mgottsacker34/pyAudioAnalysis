@@ -1,4 +1,5 @@
 import os
+import glob
 from flask import Flask, flash, request, redirect, url_for, render_template, send_from_directory
 import json
 import wave
@@ -25,21 +26,22 @@ webdata = {
     "uploaded_files": [],
     "ratio_male": 0.0,
     "ratio_female": 0.0,
-    "img_src": ""
+    "img_src": "",
+    "file_info": {
+        "type": "individual",
+        "name": "",
+        "m_time": 0,
+        "f_time": 0,
+        "total_time": 0,
+    }
 }
 
 
 # Store list of uploaded files. Called when web app is first run
 def getFilesInFolder():
     for (dirpath, dirnames, filenames) in os.walk(UPLOAD_FOLDER):
-        webdata["uploaded_files"].extend(filenames)
-        break
-        
-# Update list of uploaded files. Called when other functions change files.
-def getNewFilesInFolder():
-    for (dirpath, dirnames, filenames) in os.walk(UPLOAD_FOLDER):
         for file in filenames:
-            if file not in webdata["uploaded_files"]:
+            if file not in webdata["uploaded_files"] and file.endswith(".wav"):
                 webdata["uploaded_files"].append(file)
         break
 
@@ -115,7 +117,7 @@ def upload_file():
             print('---')
             
             # TODO: Process all records in reports.json to get aggregate stats
-            if request.form['processaction'] == 'Process ALL Files':
+            if request.form['processaction'] == 'Statistics For All Files':
             
                 print('Processing all files in reports.json...')
             
@@ -159,7 +161,7 @@ def upload_file():
                 # write resultant data to file
                 with open("reports.json", "w") as jsonFile:
                     json.dump(data, jsonFile, indent=4)
-                '''
+                
                 
                 # Create visualization from ratios
                 # update webdata.img_src
@@ -167,7 +169,7 @@ def upload_file():
                 # Refresh webpage with updated image
                 return render_template('index.html', data=webdata)
                 
-            if 'silenceremoval' in request.form['analysis']:
+            if request.form['processaction'] == "Remove Silence":
             
                 fileToProcess = './uploads/' + request.form['fileToProcess']
                 # Handle malformed user input
@@ -187,17 +189,13 @@ def upload_file():
                 
                 # Refresh file list after adding the -nosilence file
                 if (processedFile):
-                    getNewFilesInFolder()
+                    getFilesInFolder()
                     return render_template('index.html', data=webdata)
                 else:
                     flash('ERROR: Silence removal failed.')
                     return render_template('index.html', data=webdata)
-                    
-            elif 'speakerdiarization' in request.form['analysis']:
-                print('Speaker diarization')
-                return render_template('index.html', data=webdata)
                 
-            elif 'mfclassification' in request.form['analysis']:
+            elif request.form['processaction'] == "Classify Male/Female":
                 # TODO: Run mf_classification and do something with results
                 print('Male/Female Classification')
                 fileToProcess = './uploads/' + request.form['fileToProcess']
@@ -210,6 +208,7 @@ def upload_file():
                 #webUtil.produceVisuals(fileToProcess,majorKeys)
                 # TODO: Create visualization with ratios
                 webdata["img_src"] = webUtil.produceVisuals(fileToProcess,majorKeys)
+                
                 print("img_src", webdata["img_src"])
                 # TODO: Send visualization to frontend.
 		

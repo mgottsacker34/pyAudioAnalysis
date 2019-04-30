@@ -1,106 +1,116 @@
 <!doctype html>
 <head>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="styleshet" type="text/css" href="{{ url_for('static', filename = 'style.css') }}">
 </head>
 
 <body>
 
-  <div class="jumbotron">
-    <h1>Meeting Analysis Tool</h1>
-    <p>Upload a .wav audio file to analyze.</p>
-  </div>
-
-  <div class="container" style="min-height:100% width:80%">
-	{% with messages = get_flashed_messages() %}
-	  {% if messages %}
-	    {% for message in messages %}
-		  <div class="alert alert-warning alert-dismissible" role="alert">
-		  <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-			{{message}}
-		  </div>
-		{% endfor %}
-	  {% endif %}
-	{% endwith %}
-
-	{% block body %}{% endblock %}
-	</div>
-
-  <div class="container">
-
-    <div class="row">
-      <div class="col-lg-6">
-        <div class="row">
-          <div class="col-xl-12">
-            <div class="card bg-light mb-3" style="">
-              <div class="card-header">Upload a new file</div>
-              <div class="card-body">
-                <form method="post" enctype="multipart/form-data">
-                  <input type="file" name="file">
-                  <input type="submit" value="Upload">
-                </form>
-              </div>
-            </div>
+  <div id="loading" style="display:none;">
+    <div class="container" style="min-height:100%; width:80%">
+      <div class="row align-items-center">
+        <div class="col-lg-12">
+          <div class="row justify-content-center">
+            <h1>Processing selected file!</h1>
           </div>
         </div>
-
-        <div class="row">
-          <div class="col-xl-12">
-            <div class="card bg-light mb-3" style="">
-              <div class="card-header">Choose an uploaded file to analyze</div>
-              <div class="card-body">
-                <h4>Uploaded files:</h4>
-                <ul>
-                  {% for file in data.uploaded_files %}
-                    <li>{{ file }}</li>
-                  {% endfor %}
-                </ul>
-                <form method="post" id="selectionForm">
-                  <!-- <select class="custom-select" multiple>
-                    {% for file in data %}
-                      <option name="file" value="file">{{ file }}</option>
-                    {% endfor %}
-                  </select> -->
-
-                  <fieldset>
-                    <input type="text" name="fileToProcess" value=""></input>
-                    <br><hr>
-                    <input type="radio" name="analysis" value="silenceremoval">Remove Silence</input>
-                    <br>
-                    <input type="radio" name="analysis" value="speakerdiarization">Speaker Diarization</input>
-                    <br>
-                    <input type="radio" name="analysis" value="mfclassification">Male/Female Classification</input>
-                    <hr>
-                    <input type="submit" name="processaction" value="Process File"></input>
-                    <input type="submit" name="processaction" value="Process ALL Files"></input>
-                    <!-- <input type="submit" name="removesilence" value="Remove Silence" />
-                    <input type="submit" name="speakerdiarization" value="Speaker Diarization" />
-                    <input type="submit" name="mfclassification" value="Male/Female Classification" /> -->
-                  </fieldset>
-                </form>
-                <!-- <br><br> -->
-                <!-- <form method="post" enctype="multipart/form-data">
-
-                </form> -->
-                <!-- <button style="margin: 0.5em;" type="button" class="btn btn-primary">Remove Silence</button>
-                <button style="margin: 0.5em;" type="button" class="btn btn-info">Speaker Diarization</button>
-                <button style="margin: 0.5em;" type="button" class="btn btn-secondary">Male/Female Classification</button> -->
-              </div>
-            </div>
+        <div class="col-lg-12">
+          <div class="row justify-content-center">
+            <img src="static/loader2.gif" alt="Loading" />
+          </div>
+        </div>
+        <div class="col-lg-12">
+          <div class="row justify-content-center">
+            <h2>This may take a while...</h2>
           </div>
         </div>
       </div>
-      <div class="col-lg-6">
-        <h3>Results</h3>
-
-        <!-- TODO: Display visualization -->
-        <!-- render_template() from index.py will refresh page with the updated webdata object -->
-        <!-- This is the wrong way to get the data, but it could be something like the following: -->
-        <img src="{{ data.img_src }}" />
-
-
-      </div>
+      
     </div>
   </div>
+  
+  <div id="content">
+
+      <div class="jumbotron">
+        <h1>Meeting Analysis Tool</h1>
+        <p>Upload a .wav audio file to analyze.</p>
+      </div>
+
+      <div class="container" style="min-height:100%; width:80%">
+	    {% with messages = get_flashed_messages() %}
+	      {% if messages %}
+	        {% for message in messages %}
+		      <div class="alert alert-warning alert-dismissible" role="alert">
+		      <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+			    {{message}}
+		      </div>
+		    {% endfor %}
+	      {% endif %}
+	    {% endwith %}
+
+	    {% block body %}{% endblock %}
+	    </div>
+
+      <div class="container">
+
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="row">
+              <div class="col-xl-12">
+                <div class="card bg-light mb-3" style="">
+                  <div class="card-header">Upload a new file</div>
+                  <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                      <input type="file" name="file">
+                      <input type="submit" value="Upload">
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col-xl-12">
+                <div class="card bg-light mb-3" style="">
+                  <div class="card-header">Choose an uploaded file to analyze</div>
+                  <div class="card-body">
+                    <h4>Uploaded files:</h4>
+                    <form method="post" id="selectionForm">
+                      <select name="fileToProcess" class="custom-select" multiple>
+                        {% for file in data.uploaded_files %}
+                          <option value="{{ file }}">{{ file }}</option>
+                        {% endfor %}
+                      </select>
+
+                      <fieldset>
+                        <hr>
+                        <h4>Actions:</h4>
+                        <input type="submit" name="processaction" value="Remove Silence" class="btn btn-info" style="margin: 0.5em;" onclick="$('#loading').show(); $('#content').hide()"></input>
+                        <input type="submit" name="processaction" value="Classify Male/Female" class="btn btn-primary" style="margin: 0.5em;"></input>
+                        <input type="submit" name="processaction" value="Statistics For All Files" class="btn btn-secondary" style="margin: 0.5em;"></input>
+                      </fieldset>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <h3>Results</h3>
+
+            <!-- TODO: Display visualization -->
+            <!-- render_template() from index.py will refresh page with the updated webdata object -->
+            <!-- This is the wrong way to get the data, but it could be something like the following: -->
+            <img src="{{ data.img_src }}" />
+
+
+          </div>
+        </div>
+      </div>
+      
+  </div>
+  
+
 
 
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
