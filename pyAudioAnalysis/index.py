@@ -118,28 +118,43 @@ def upload_file():
             if request.form['processaction'] == 'Process ALL Files':
             
                 print('Processing all files in reports.json...')
-                
+            
+        
                 # Possible way to do this:
                 # Iterate through records in the JSON using method similar to in findRecordAndUpdate()
-                    # m_total: Add up all the speaking times for males
-                    # f_total: Add up all the speaking times for females
-                    # total_time: Add up all lengthWithoutSilence values
+                m_total = 0
+                f_total = 0
+                total_time = 0
+                m_total_ratio = 0
+                f_total_ratio = 0
+                
+                with open("reports.json", "r") as jsonFile:
+                    data = json.load(jsonFile)
                     
-                # m_total_ratio: Divide m_total by total_time
-                # f_total_ratio: Divide f_total by total_time
+                    for record in data["individual_report_data"]:
+                        m_total += record["m_speakingTime"]
+                        f_total += record["f_speakingTime"]
+                        total_time += record["lengthWithoutSilence"]
+                    
+                m_total_ratio = m_total/total_time
+                f_total_ratio = f_total/total_time
                 
                 # Write values to reports.json similar to in findRecordAndUpdate(). You will not need
                 # find the record, as the "aggregate_report_data" is the only object of its kind and
                 # is not in an array. I did not test this, but Something like:
-                '''
+                
                 with open("reports.json", "r") as jsonFile:
                     data = json.load(jsonFile)
                     
-                data["aggregate_report_data"]["m_total_ratio"] = newValue
-                data["aggregate_report_data"]["f_total_ratio"] = newValue
-                data["aggregate_report_data"]["m_total_time"] = newValue
-                data["aggregate_report_data"]["f_total_time"] = newValue
-                data["aggregate_report_data"]["total_time"] = newValue
+                data["aggregate_report_data"]["m_total_ratio"] = m_total_ratio 
+                
+                data["aggregate_report_data"]["f_total_ratio"] = f_total_ratio
+                
+                data["aggregate_report_data"]["m_total_time"] = m_total
+                
+                data["aggregate_report_data"]["f_total_time"] = f_total
+                
+                data["aggregate_report_data"]["total_time"] = total_time
                             
                 # write resultant data to file
                 with open("reports.json", "w") as jsonFile:
