@@ -38,7 +38,7 @@ webdata = {
 def getFilesInFolder():
     for (dirpath, dirnames, filenames) in os.walk(UPLOAD_FOLDER):
         for file in filenames:
-            if file not in webdata["uploaded_files"] and file.endswith(".wav"):
+            if file not in webdata["uploaded_files"] and file.endswith("-nosilence.wav"):
                 webdata["uploaded_files"].append(file)
         break
 
@@ -177,35 +177,7 @@ def upload_file():
                 
                 # Refresh webpage with updated image
                 return render_template('index.html', data=webdata)
-                
-            elif request.form['processaction'] == "Remove Silence":
-            
-                fileToProcess = './uploads/' + request.form['fileToProcess']
-                # Handle malformed user input
-                if '.wav' not in fileToProcess:
-                    flash('ERROR: Please enter a .wav file from the list above as the file to process.')
-                    return render_template('index.html', data=webdata)
-                if not os.path.isfile(fileToProcess):
-                    flash('ERROR: Please enter a .wav file from the list above as the file to process.')
-                    return render_template('index.html', data=webdata)
-                    
-                print('Calling silenceUtil...')
-                
-                processedFile = webUtil.removeSilence(fileToProcess, 0.1, 0.1)
-                
-                # Find file record in records.json and update its lengthWithoutSilence
-                basename = request.form['fileToProcess']
-                
-                findRecordAndUpdate(basename, updateMode="silenceRemoved")
-                
-                # Refresh file list after adding the -nosilence file
-                if (processedFile):
-                    getFilesInFolder()
-                    return render_template('index.html', data=webdata)
-                else:
-                    flash('ERROR: Silence removal failed.')
-                    return render_template('index.html', data=webdata)
-                
+
             elif request.form['processaction'] == "Classify Male/Female":
                 # Run mf_classification
                 print('Male/Female Classification')
@@ -215,7 +187,7 @@ def upload_file():
                 # percentages of males and females.
                 [m_ratio, f_ratio, unk_ratio, m_time, f_time, unk_time] = webUtil.mf_classify(fileToProcess)
                 majorKeys = [m_ratio,f_ratio,unk_ratio,m_time,f_time,unk_time]
-                # TODO: Write total times and ratios to reports.json file
+                # Write total times and ratios to reports.json file
                 longname = request.form['fileToProcess']
                 print("---longname",longname)
                 basename = longname.replace('-nosilence.wav', '.wav')
@@ -276,6 +248,33 @@ def upload_file():
                 
                 json.dumps(data, indent=4)
                 webdata["uploaded_files"].append(filename)
+                
+                fileToProcess = './uploads/' + filename
+                # Handle malformed user input
+                if '.wav' not in fileToProcess:
+                    flash('ERROR: Please enter a .wav file from the list above as the file to process.')
+                    return render_template('index.html', data=webdata)
+                if not os.path.isfile(fileToProcess):
+                    flash('ERROR: Please enter a .wav file from the list above as the file to process.')
+                    return render_template('index.html', data=webdata)
+                    
+                print('Calling silenceUtil...')
+                
+                processedFile = webUtil.removeSilence(fileToProcess, 0.1, 0.1)
+                
+                # Find file record in records.json and update its lengthWithoutSilence
+                basename = filename
+                
+                findRecordAndUpdate(basename, updateMode="silenceRemoved")
+                
+                # Refresh file list after adding the -nosilence file
+                if (processedFile):
+                    getFilesInFolder()
+                    return render_template('index.html', data=webdata)
+                else:
+                    flash('ERROR: Silence removal failed.')
+                    return render_template('index.html', data=webdata)
+                
                 return render_template('index.html', data=webdata)
                 # return redirect(url_for('uploaded_file',
                 #                         filename=filename))
